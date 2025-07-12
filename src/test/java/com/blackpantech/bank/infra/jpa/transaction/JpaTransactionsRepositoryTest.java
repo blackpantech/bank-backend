@@ -3,6 +3,8 @@ package com.blackpantech.bank.infra.jpa.transaction;
 import com.blackpantech.bank.domain.account.exceptions.AccountNotFoundException;
 import com.blackpantech.bank.domain.transaction.Transaction;
 import com.blackpantech.bank.domain.transaction.TransactionType;
+import com.blackpantech.bank.infra.jpa.account.AccountEntity;
+import com.blackpantech.bank.infra.jpa.account.AccountsJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,6 +26,9 @@ public class JpaTransactionsRepositoryTest {
 
     @Autowired
     TransactionsJpaRepository transactionsJpaRepository;
+
+    @Autowired
+    AccountsJpaRepository accountsJpaRepository;
 
     @Autowired
     JpaTransactionsRepository jpaTransactionsRepository;
@@ -61,9 +66,11 @@ public class JpaTransactionsRepositoryTest {
     @DisplayName("should create a new transaction")
     void shouldCreateTransaction(final long accountId, final LocalDateTime date, final float amount, final TransactionType transactionType)
             throws AccountNotFoundException {
+        AccountEntity accountEntityBeforeTransaction = accountsJpaRepository.findById(accountId).orElseThrow();
         final Transaction transaction = jpaTransactionsRepository.createTransaction(accountId, date, amount, transactionType);
 
         assertNotNull(transaction);
+        assertEquals(accountEntityBeforeTransaction.getBalance() + amount, accountsJpaRepository.findById(accountId).orElseThrow().getBalance());
     }
 
     @ParameterizedTest

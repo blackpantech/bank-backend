@@ -54,9 +54,16 @@ public class JpaTransactionsRepository implements TransactionsRepository {
             throw new AccountNotFoundException(String.format("Account with ID %s not found.", accountId));
         }
 
-        final TransactionEntity transactionEntity = new TransactionEntity(optionalAccountEntity.get(), date, amount, transactionType);
+        final AccountEntity updatedAccountEntity = getAccountWithUpdatedBalance(optionalAccountEntity.get(), amount);
+
+        final TransactionEntity transactionEntity = new TransactionEntity(updatedAccountEntity, date, amount, transactionType);
 
         return transactionEntityMapper.TransactionEntityToTransaction(transactionsJpaRepository.save(transactionEntity));
+    }
+
+    private AccountEntity getAccountWithUpdatedBalance(final AccountEntity accountEntityToUpdate, final float amount) {
+        accountEntityToUpdate.setBalance(accountEntityToUpdate.getBalance() + amount);
+        return accountsJpaRepository.save(accountEntityToUpdate);
     }
 
 }
