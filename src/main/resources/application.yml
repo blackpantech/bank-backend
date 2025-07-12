@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: bank
+  datasource:
+    url: jdbc:h2:mem:bank
+    username: dev
+    password: dev
+    driverClassName: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create-drop
+
+sql:
+  init:
+    platform: h2
